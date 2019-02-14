@@ -204,6 +204,8 @@ class AliDock(object):
         dockRuntime = None
 
         # Define which mounts to expose to the container. On non-Linux, we need a native volume too
+
+        outDir = "/c" + outDir.replace("\\", "/").split(":")[1]
         dockMounts = [Mount(self.dirInside, outDir, type="bind", consistency="cached")]
         if platform.system() != "Linux":
             dockMounts.append(Mount("/persist", "persist-"+self.conf["dockName"], type="volume"))
@@ -224,6 +226,8 @@ class AliDock(object):
                 raise AliDockError("cannot find the NVIDIA runtime in your Docker installation")
 
         # Start container with that script
+
+        LOG.info(outDir)
         self.cli.containers.run(self.conf["imageName"],
                                 command=[self.dirInside + "/.alidock-" + dockName + "/init.sh"],
                                 detach=True,
